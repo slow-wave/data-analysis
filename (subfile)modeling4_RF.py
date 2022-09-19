@@ -99,7 +99,7 @@ print(-scores)
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import GridSearchCV
 
-rf_params = {'n_estimators' : [140, 160, 180, 200]}
+rf_params = {'n_estimators' : [140, 160, 180, 200, 220]}
 rf = RandomForestRegressor(random_state=1217)
 
 gridsearch_forest = GridSearchCV(rf, rf_params, scoring=rmse_scorer, cv=5, n_jobs=-1)
