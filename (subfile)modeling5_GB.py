@@ -79,7 +79,7 @@ def rmse(y, y_pred):
 
 rmse_scorer = make_scorer(rmse, greater_is_better=False)
 
-#%% Gradient Boosting
+# Gradient Boosting
 X_train=train[input_var]
 y_train=train[target]
 X_test=test[input_var]
@@ -87,16 +87,32 @@ X_test=test[input_var]
 from sklearn.model_selection import cross_val_score
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.ensemble import GradientBoostingRegressor
-import xgboost as xg
 
 gbrt = GradientBoostingRegressor()
 gbrt.fit(X_train,y_train)
-scores = cross_val_score(rf, X_train, y_train, scoring=rmse_scorer, cv=3)
+scores = cross_val_score(gbrt, X_train, y_train, scoring=rmse_scorer, cv=3)
 print(-scores)
 
+#%% RF 모델 튜닝
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.model_selection import GridSearchCV
+
+gbrt_params = { 'learning_rate' : [0.01, 0.02, 0.03, 0.04],
+               'n_estimators' : [1000, 1500],
+               'subsample' : [0.9, 0.5, 0.2],
+               'max_depth' : [2, 4, 6, 8]
+}
+
+gbrt = GradientBoostingRegressor()
+
+gridsearch_gbrt = GridSearchCV(gbrt, gbrt_params, scoring=rmse_scorer, cv=5, n_jobs=-1)
+
+gridsearch_gbrt.fit(X_train, y_train)
+print(gridsearch_gbrt.best_params_)
+
 #%% 출력
-test['18~20_ride'] = rf.predict(X_test)
-test[['id','18~20_ride']].to_csv("subm_baseline.csv",index=False)
+test['18~20_ride'] = gbrt.predict(X_test)
+test[['id','18~20_ride']].to_csv("subm_GB.csv",index=False)
 
 
 
